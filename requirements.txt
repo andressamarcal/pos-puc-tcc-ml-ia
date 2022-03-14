@@ -1,0 +1,10 @@
+streamlit
+shap
+dalex
+pandas
+numpy
+emoji
+pycaret
+scipy
+scikit-plot
+plot-metric
