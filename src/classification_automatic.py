@@ -7,6 +7,7 @@ import shutil
 import time
 import warnings
 from datetime import date
+from distutils.core import setup
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -37,7 +38,6 @@ warnings.filterwarnings("ignore")
 
 st.set_page_config(
     page_title="AutoML App",
-    # page_icon = "",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -47,12 +47,6 @@ st.set_option("deprecation.showfileUploaderEncoding", False)
 
 st.sidebar.header("AutoML App\n\n\n")
 st.sidebar.image("../img/ml3.png")
-
-
-def calculate_profit(y, y_pred):
-    tp = np.where((y_pred==1) & (y==1), (5000-1000), 0)
-    fp = np.where((y_pred==1) & (y==0), -1000, 0)
-    return np.sum([tp,fp])
 
 
 @st.cache(ttl=3600, suppress_st_warning=True, allow_output_mutation=True)
@@ -66,44 +60,9 @@ def upload_data(file):
     return df
 
 
-@st.cache(ttl=3600, suppress_st_warning=True, allow_output_mutation=True)
-def setup_classification(
-    df_abt,
-    key_vars=None,
-    num_vars=None,
-    cat_vars=None,
-    ordinal_vars=None,
-    date_vars=None,
-    TARGET=None,
-    folds=5,
-    outliers=False,
-    random=False,
-):
-
-    SETUPCLASSIFICATION = pcc.setup(
-        data=df_abt,
-        target=TARGET,
-        train_size=0.8,
-        ignore_features=key_vars if key_vars else None,
-        categorical_features=cat_vars if cat_vars else None,
-        numeric_features=num_vars if num_vars else None,
-        ordinal_features=ordinal_vars if ordinal_vars else None,
-        date_features=date_vars if date_vars else None,
-        fix_imbalance=True if random else False,
-        # bin_numeric_features=TARGET,
-        fix_imbalance_method=random,
-        silent=True,
-        session_id=123,
-        html=False,
-        feature_selection_method='boruta',
-    )
-
-    return SETUPCLASSIFICATION
-
-
-TARGET, target = None, None
-dict_values_not_tuning, dict_values_tuning = {}, {}
-df_abt, df_oot = pd.DataFrame(), pd.DataFrame()
+# TARGET, target = None, None
+# dict_values_not_tuning, dict_values_tuning = {}, {}
+# df_abt, df_oot = pd.DataFrame(), pd.DataFrame()
 
 
 def main():
@@ -112,8 +71,7 @@ def main():
     # EXECUTION = st.sidebar.radio("Executar a Aplicação", ("Automatica", "Customizada"))
     
     TYPE = st.sidebar.selectbox(
-        #adicionar regressão e time series 
-        label="Modelagem", options=["Tutorial para Uso", "Classificação"]
+        label="Modelagem", options=["Regressão", "Classificação"]
     )
     st.header(TYPE)
     st.markdown("___")
@@ -121,15 +79,15 @@ def main():
     if TYPE == "":
         st.stop()
     
-    if TYPE == "Tutorial para Uso":
-        filedoc = codecs.open("..//markdowns//documentation.md", "r", "utf-8")
-        st.write("\n\n")
-        st.markdown(filedoc.read(), unsafe_allow_html=True)
+    # if TYPE == "Tutorial para Uso":
+    filedoc = codecs.open("..//markdowns//documentation.md", "r", "utf-8")
+    st.write("\n\n")
+    st.markdown(filedoc.read(), unsafe_allow_html=True)
 
     upload_file_abt = st.sidebar.file_uploader(
         label="Upload BASE TREINO", type=["csv", "xlsx"]
     )
-
+    
     upload_file_oot = st.sidebar.file_uploader(
         label="Upload BASE TESTE", type=["csv", "xlsx"]
     )
@@ -137,68 +95,36 @@ def main():
     df_abt = upload_data(upload_file_abt) if upload_file_abt else st.stop()
     df_oot = upload_data(upload_file_oot) if upload_file_oot else None
 
-    # Para testar caso use a mesma base nos dois campos
-    # df_oot = df_oot[0:85400]
-    # df_abt =  df_abt[85401::]
-        
     st.markdown("**Dataset Treino**")
     st.write(df_abt.head(20).head(20).style.highlight_null(null_color="yellow"))
-
-    st.markdown("_______")
-    st.markdown("**Seleção de Variáveis**")
-
-    key_vars = st.multiselect(
-        label="Variaveis Chaves",
-        options=[" "] + df_abt.columns.tolist(),
-    )
-
-    num_vars = st.multiselect(
-        label="Variaveis Numericas",
-        options=[" "] + df_abt.columns.tolist(),
-    )
-
-    cat_vars = st.multiselect(
-        label="Variaveis Categoricas",
-        options=[" "] + df_abt.columns.tolist(),
-    )
-
-    ordinal_vars = st.multiselect(
-        label="Variaveis Ordinais",
-        options=[" "] + df_abt.columns.tolist(),
-    )
-
-    date_vars = st.multiselect(
-        label="Variaveis com Datas",
-        options=[" "] + df_abt.columns.tolist(),
-    )
 
     st.write("_______")
     st.markdown("**Target**")
 
-    col1, _ = st.beta_columns(2)
+    col1, _ = st.columns(2)
 
-    try:
-        with col1:
-            TARGET = st.selectbox(
-                label="Escolha a variavel TARGET",
-                options=[" "] + df_abt.columns.tolist(),
-                index=(0),
-            )
-            target = df_abt[TARGET]
-            st.bar_chart(df_abt[TARGET].value_counts())
-
-        neg, pos = np.bincount(df_abt[TARGET])
-        total = neg + pos
-        st.text(
-            "Instâncias:\n\n Geral: {}\n 1: {} ({:.2f}% total)\n 0: {} ({:.2f}% total)\n  ".format(
-                total, pos, 100 * pos / total, neg, 100 * neg / total
-            )
+    # try:
+    with col1:
+        TARGET = st.selectbox(
+            label="Escolha a variavel TARGET",
+            options=[" "] + df_abt.columns.tolist(),
+            index=(0),
         )
-        st.text(f"Linhas x Colunas: {df_abt.shape}")
-    except:
-        st.warning("**Campo Obrigatorio!**")
+        target = df_abt[TARGET]
+        st.bar_chart(df_abt[TARGET].value_counts())
 
-    random = RandomUnderSampler(random_state=123)
+    neg, pos = np.bincount(df_abt[TARGET])
+    total = neg + pos
+    st.text(
+        "Instâncias:\n\n Geral: {}\n 1: {} ({:.2f}% total)\n 0: {} ({:.2f}% total)\n  ".format(
+            total, pos, 100 * pos / total, neg, 100 * neg / total
+        )
+    )
+    st.text(f"Linhas x Colunas: {df_abt.shape}")
+# except:
+    st.warning("**Campo Obrigatorio!**")
+
+    # random = RandomUnderSampler(random_state=123)
 
     st.markdown("_______")
     st.markdown("**Comparar Modelos**")
@@ -208,36 +134,31 @@ def main():
         start_button = st.button("Iniciar")
         if start_button:
             with st.spinner("Treinando Modelos"):
-                try:
-                    setup_classification(
-                        df_abt=df_abt,
-                        key_vars=key_vars,
-                        num_vars=num_vars,
-                        cat_vars=cat_vars,
-                        ordinal_vars=ordinal_vars,
-                        date_vars=date_vars,
-                        TARGET=TARGET,
-                        folds=5,
-                        random=random,
-                    )
-                    # pcc.add_metric('profit', 'Profit', calculate_profit)
-                    BEST = pcc.compare_models(fold=5, sort="auc")
-                    st.write(pcc.get_config("display_container")[1])
-                    st.write(BEST)
-                                
-                    with st.beta_expander(label = "Informações do Setup"):
-                        st.write("Setup")
-                        st.write(pcc.get_config("display_container")[0])
-                    
-                    st.success("Etapa concluida com sucesso!")
+                # try:
+                pcc.setup(
+                    df_abt=df_abt,
+                    TARGET=target,
+                    folds=5,
+                    session_id = 123
+                )
+                # pcc.add_metric('profit', 'Profit', calculate_profit)
+                BEST = pcc.compare_models(fold=5, sort="auc")
+                st.write(pcc.get_config("display_container")[1])
+                st.write(BEST)
+                            
+                with st.expander(label = "Informações do Setup"):
+                    st.write("Setup")
+                    st.write(pcc.get_config("display_container")[0])
                 
-                except:
-                    st.error("Selecione a variavel **TARGET**")
+                st.success("Etapa concluida com sucesso!")
+                
+                # except:
+                #     st.error("Selecione a variavel **TARGET**")
         
         st.markdown("_______")
         st.markdown("**Treinar Modelo [BASE TREINO]**")
 
-        col5, col6, col7, col08, col09  = st.beta_columns(5)
+        col5, col6, col7, col08, col09  = st.columns(5)
 
         try:
             build_model = pcc.create_model(
@@ -337,7 +258,7 @@ def main():
         st.markdown("_______")
         st.markdown("**Tuning do Modelo**")
 
-        col8, col9, col10, col11, col12 = st.beta_columns(5)
+        col8, col9, col10, col11, col12 = st.columns(5)
 
         try:
             model_tuned = pcc.tune_model(build_model, fold=5, n_iter=30, optimize="AUC")
@@ -440,7 +361,7 @@ def main():
             "Usar essa opção apenas para os algoritmos **rf, et, catboost, lightgbm, dt, xgboost.**"
         )
 
-        col111, _ = st.beta_columns(2)
+        col111, _ = st.columns(2)
 
         try:
             if (
@@ -519,7 +440,7 @@ def main():
             st.markdown("_______")
             st.markdown("** Grupos Homogeneos [TREINO]**")
             
-            col22, col23 = st.beta_columns(2)
+            col22, col23 = st.columns(2)
             
             predictions["proba"] = predictions.apply(lambda x: x["Score"] if x["Label"] == 1 else 1-x["Score"], axis=1)
 
@@ -609,7 +530,7 @@ def main():
             
             predictions_oot["proba"] = predictions_oot.apply(lambda x: x["Score"] if x["Label"] == 1 else 1-x["Score"], axis=1)
             
-            col20, col21 = st.beta_columns(2)
+            col20, col21 = st.columns(2)
             
             d1 = pd.DataFrame(
                 {'Bucket': pd.qcut(predictions_oot['proba'], 10), 'Num': 1})
@@ -688,7 +609,7 @@ def main():
             
             st.write(cutoff_df)
             
-            col30, col31 = st.beta_columns(2)
+            col30, col31 = st.columns(2)
 
             with col30:
                 cutoff_df.plot.line(x='prob', y=['accuracy','sensi','speci'])
