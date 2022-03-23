@@ -29,9 +29,6 @@ from pandas_profiling import ProfileReport
 from plot_metric.functions import BinaryClassification
 from pycaret.utils import check_metric
 from sklearn import metrics
-from sklearn.metrics import (accuracy_score, classification_report,
-                             confusion_matrix, f1_score, precision_score,
-                             recall_score, roc_auc_score)
 from streamlit import caching
 
 warnings.filterwarnings("ignore")
@@ -39,7 +36,6 @@ warnings.filterwarnings("ignore")
 st.set_page_config(
     page_title="AutoML App",
     layout="wide",
-    # initial_sidebar_state="expanded",
 )
 
 st.set_option("deprecation.showPyplotGlobalUse", False)
@@ -54,14 +50,8 @@ def main():
     
     dict_values_not_tuning, dict_values_tuning = {}, {} 
     
-    TYPE = st.sidebar.selectbox(
-        label="Modelagem", options=["Regressão", "Classificação"]
-    )
-    st.header(TYPE)
+    st.header("Modelagem Automatica de Modelos de Classificação")
     st.markdown("___")
-
-    if TYPE == "":
-        st.stop()
     
     filedoc = codecs.open("..//markdowns//documentation.md", "r", "utf-8")
     st.write("\n\n")
@@ -72,7 +62,7 @@ def main():
     )
     
     upload_file_oot = st.sidebar.file_uploader(
-        label="Upload BASE TESTE", type=["csv", "xlsx"]
+        label="Upload  BASE TESTE", type=["csv", "xlsx"]
     )
 
     if upload_file_abt is not None:
@@ -109,22 +99,20 @@ def main():
 
     st.markdown("**Comparar Modelos**")
 
-    # if TYPE == "Classificação" and EXECUTION == "Automatica":
-    if TYPE == "Classificação":
-        start_button = st.button("Iniciar")
-        if start_button:
-            with st.spinner("Treinando Modelos"):
-                pcc.setup(
-                    data=df_abt,
-                    target=TARGET,
-                    session_id=123,
-                    fold_strategy='kfold',
-                    fold=5
-                )
-                BEST = pcc.compare_models(fold=5, sort="auc")
-                st.write(pcc.get_config("display_container")[1])
-                st.write(BEST)            
-                st.success("Etapa concluida com sucesso!")
+    start_button = st.button("Iniciar")
+    if start_button:
+        with st.spinner("Treinando Modelos"):
+            pcc.setup(
+                data=df_abt,
+                target=TARGET,
+                session_id=123,
+                fold_strategy='kfold',
+                fold=5
+            )
+            BEST = pcc.compare_models(fold=5, sort="auc")
+            st.write(pcc.get_config("display_container")[1])
+            st.write(BEST)            
+            st.success("Etapa concluida com sucesso!")
                 
                 
         st.markdown("_______")
@@ -471,106 +459,106 @@ def main():
             y_train = pcc.get_config('y_train')
             y_test = pcc.get_config('y_test')
             
-            st.markdown("_______")
-            st.markdown("** Grupos Homogeneos [TESTE]**")            
+            # st.markdown("_______")
+            # st.markdown("** Grupos Homogeneos [TESTE]**")            
             
-            predictions_oot["proba"] = predictions_oot.apply(lambda x: x["Score"] if x["Label"] == 1 else 1-x["Score"], axis=1)
+            # predictions_oot["proba"] = predictions_oot.apply(lambda x: x["Score"] if x["Label"] == 1 else 1-x["Score"], axis=1)
             
-            col20, col21 = st.beta_columns(2)
+            # col20, col21 = st.beta_columns(2)
             
-            d1 = pd.DataFrame(
-                {'Bucket': pd.qcut(predictions_oot['proba'], 10), 'Num': 1})
+            # d1 = pd.DataFrame(
+            #     {'Bucket': pd.qcut(predictions_oot['proba'], 10), 'Num': 1})
                     
-            d2 = d1.groupby(["Bucket"], as_index=False)["Num"].count().reset_index()
-            d2[['Bucket']] = d2[['Bucket']].astype(str)
-            d2 = d2.drop(['index'], axis=1)
+            # d2 = d1.groupby(["Bucket"], as_index=False)["Num"].count().reset_index()
+            # d2[['Bucket']] = d2[['Bucket']].astype(str)
+            # d2 = d2.drop(['index'], axis=1)
 
-            l2, l3 = [], []
+            # l2, l3 = [], []
 
-            for j, i in enumerate(d2['Bucket'], 1):
-                i = i.replace('(', '')
-                i = i.replace(']', '')
-                l3.append('GH ' + str(j))
-                for x  in i.split(','):
-                    l2.append(float(x))
+            # for j, i in enumerate(d2['Bucket'], 1):
+            #     i = i.replace('(', '')
+            #     i = i.replace(']', '')
+            #     l3.append('GH ' + str(j))
+            #     for x  in i.split(','):
+            #         l2.append(float(x))
 
-            st.markdown("_______")
+            # st.markdown("_______")
                     
-            predictions_oot['GH']= pd.cut(predictions_oot.proba, bins = sorted(set(l2)), labels=l3)
+            # predictions_oot['GH']= pd.cut(predictions_oot.proba, bins = sorted(set(l2)), labels=l3)
                         
-            qtd = predictions_oot.groupby(["GH"])[TARGET].count()
-            prc = predictions_oot.groupby(["GH"])[TARGET].sum()/predictions_oot.groupby(['GH'])[TARGET].count()
+            # qtd = predictions_oot.groupby(["GH"])[TARGET].count()
+            # prc = predictions_oot.groupby(["GH"])[TARGET].sum()/predictions_oot.groupby(['GH'])[TARGET].count()
 
-            ghs = pd.DataFrame([], columns=["Volumetria", "%"])
-            ghs["Volumetria"], ghs["%"] = qtd, prc
+            # ghs = pd.DataFrame([], columns=["Volumetria", "%"])
+            # ghs["Volumetria"], ghs["%"] = qtd, prc
 
-            with col20:
-                st.dataframe(d2) 
-            with col21:
-                st.dataframe(ghs.reset_index().astype(str))
+            # with col20:
+            #     st.dataframe(d2) 
+            # with col21:
+            #     st.dataframe(ghs.reset_index().astype(str))
             
             
-            matplotlib.rc_file_defaults()
-            ax1 = sns.set_style(style=None, rc=None )
-            fig, ax1 = plt.subplots(figsize=(16,3))
+            # matplotlib.rc_file_defaults()
+            # ax1 = sns.set_style(style=None, rc=None )
+            # fig, ax1 = plt.subplots(figsize=(16,3))
 
-            sns.lineplot(data = ghs['%'], marker='o', sort = False, ax=ax1)
-            ax2 = ax1.twinx()
-            sns.barplot(data = ghs, x=l3, y='Volumetria', alpha=0.5, ax=ax2)
+            # sns.lineplot(data = ghs['%'], marker='o', sort = False, ax=ax1)
+            # ax2 = ax1.twinx()
+            # sns.barplot(data = ghs, x=l3, y='Volumetria', alpha=0.5, ax=ax2)
 
-            st.pyplot()
-            st.success("Etapa concluida!")
+            # st.pyplot()
+            # st.success("Etapa concluida!")
 
 
-            st.markdown("_______")
-            st.markdown("** PSI **")
+            # st.markdown("_______")
+            # st.markdown("** PSI **")
             
-            d4['proporcao-treino'] = d4['Num']/d4['Num'].sum()
-            d2['proporcao-oot'] = d2['Num']/d2['Num'].sum()
-            d2['proporcao-treino']= d4['proporcao-treino']
+            # d4['proporcao-treino'] = d4['Num']/d4['Num'].sum()
+            # d2['proporcao-oot'] = d2['Num']/d2['Num'].sum()
+            # d2['proporcao-treino']= d4['proporcao-treino']
 
-            d2['PSI'] = (d4['proporcao-treino'] - d2['proporcao-oot']) * np.log(d4['proporcao-treino'] / d2['proporcao-oot'])
-            d4['PSI'] = (d4['proporcao-treino'] - d2['proporcao-oot']) * np.log(d4['proporcao-treino'] / d2['proporcao-oot'])
+            # d2['PSI'] = (d4['proporcao-treino'] - d2['proporcao-oot']) * np.log(d4['proporcao-treino'] / d2['proporcao-oot'])
+            # d4['PSI'] = (d4['proporcao-treino'] - d2['proporcao-oot']) * np.log(d4['proporcao-treino'] / d2['proporcao-oot'])
             
-            st.write(d2)
+            # st.write(d2)
             
-            st.markdown("_______")
-            st.markdown("**Ponto de Corte**")      
+            # st.markdown("_______")
+            # st.markdown("**Ponto de Corte**")      
             
-            numbers = [float(x)/10 for x in range(10)]
-            df4 = predictions.copy()
-            y_train_pred_final = []
+            # numbers = [float(x)/10 for x in range(10)]
+            # df4 = predictions.copy()
+            # y_train_pred_final = []
             
-            for i in numbers:
-                df4[i]= predictions['proba'].map(lambda x: 1 if x > i else 0)
+            # for i in numbers:
+            #     df4[i]= predictions['proba'].map(lambda x: 1 if x > i else 0)
 
-            cutoff_df = pd.DataFrame(columns = ['prob','accuracy','sensi','speci'])
+            # cutoff_df = pd.DataFrame(columns = ['prob','accuracy','sensi','speci'])
             
-            num = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
-            for i in num:
-                cm1 = metrics.confusion_matrix(df4[TARGET], df4[i])
-                total1=sum(sum(cm1))
-                accuracy = (cm1[0,0]+cm1[1,1])/total1                
-                speci = cm1[0,0]/(cm1[0,0]+cm1[0,1])
-                sensi = cm1[1,1]/(cm1[1,0]+cm1[1,1])
-                cutoff_df.loc[i] =[i,accuracy,sensi,speci]
+            # num = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+            # for i in num:
+            #     cm1 = metrics.confusion_matrix(df4[TARGET], df4[i])
+            #     total1=sum(sum(cm1))
+            #     accuracy = (cm1[0,0]+cm1[1,1])/total1                
+            #     speci = cm1[0,0]/(cm1[0,0]+cm1[0,1])
+            #     sensi = cm1[1,1]/(cm1[1,0]+cm1[1,1])
+            #     cutoff_df.loc[i] =[i,accuracy,sensi,speci]
             
-            st.write(cutoff_df)
+            # st.write(cutoff_df)
             
-            col30, col31 = st.beta_columns(2)
+            # col30, col31 = st.beta_columns(2)
 
-            with col30:
-                cutoff_df.plot.line(x='prob', y=['accuracy','sensi','speci'])
-                plt.show()
-                st.pyplot()
+            # with col30:
+            #     cutoff_df.plot.line(x='prob', y=['accuracy','sensi','speci'])
+            #     plt.show()
+            #     st.pyplot()
             
-            bc = BinaryClassification(y_test, df4['Label'], labels=["Class 1", "Class 2"])
+            # bc = BinaryClassification(y_test, df4['Label'], labels=["Class 1", "Class 2"])
             
-            with col31:
-                plt.figure(figsize=(5,5))
-                bc.plot_roc_curve()
-                plt.show()
-                st.pyplot()          
+            # with col31:
+            #     plt.figure(figsize=(5,5))
+            #     bc.plot_roc_curve()
+            #     plt.show()
+            #     st.pyplot()          
 
         except Exception as e:
             # st.error(e)
@@ -585,7 +573,11 @@ def main():
 
     # elif TYPE == "Regressão":
     #     regression_pycaret()
-
+    
+    # st.markdown("_______")
+    # filedoc = codecs.open("..//markdowns//tecnicas_usadas.md", "r", "utf-8")
+    # st.write("\n\n")
+    # st.markdown(filedoc.read(), unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

@@ -6,17 +6,21 @@
 
 <br>
 
-Antes de iniciar o seu uso, pedimos que siga os passos listados abaixo, para que seu experimento funcione.
+Antes de iniciar o seu uso, siga os passos listados abaixo, para que seu experimento funcione corretamente.
 
 1. Primeiramente, insira os <b>dois datasets</b>, o <b>primeiro dataset</b> é para realizar o <b>treino do modelo</b>, e o <b>segundo</b> para o <b>teste do modelo</b>.
-2. Primeiramente, insira seus dados, respeitando o tamanho <u>limite de 200 megabytes</u>.
-3. Após inserir a base de dados, no menu lateral esquerdo, selecione a opção <b>Classificação</b>.
-4. Lembrando que quanto maior a base de dados inserida, maior será o tempo de processamento da aplicação.
-5. Inserir duas bases, a **Base de Treino** e a **Base de Teste** .
-6. É preciso ter a **variável Target** em <u>ambas as bases</u> , para que as métricas do OOT sejam exibidas, caso contrario, as métricas de KS, GINI e etc, podem não serem exibidas durante o processo.
-7. O dataset inserido, deve estar <u>devidamente tratado</u> , pois a aplicação já irá aplicar tecnicas automaticas, partindo do pré suposto que os dados já estejam <u>analisados e tratados pelo encarregado</u> da criação do modelo Fast.
-8. A parte de intepretabilidade só irá funcionar para modelos baseados em árvores. 
-9. Se algum erro for encontrado, por favor, entrar em contato com o time de Analytics para informar o ocorrido.
+    
+    1.1. **Atenção!!!** <u>o limite do dataset é de 200 megabytes</u>.
+
+2. Após inserir suas bases de dados, irá exibir um combo box para selecionar a sua variavel **TARGET**, indique qual a sua variável target, após isso o processo pode ser iniciado.
+
+3. Após inserir as bases de dados, agora é só clicar no botão **Iniciar**.
+
+4. Lembrando que quanto maior a base de dados inserida, maior será o tempo de processamento completo da aplicação.
+
+5. Subtende-se que o dataset que foi inserido, estará <u>devidamente tratado</u> , pois a aplicação já irá aplicar tecnicas automaticas, partindo do pré suposto que os dados já estejam <u>tratados pelo encarregado de inserir na aplicação</u> para a criação do modelo Fast.
+
+6. A parte de **intepretabilidade** só irá funcionar para **modelos baseados em árvores**. 
 
 <br>
 
