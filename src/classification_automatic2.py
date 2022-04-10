@@ -13,6 +13,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pandas_profiling import ProfileReport
 import pycaret
 import pycaret.classification as pcc
 import pycaret.regression as pcr
@@ -25,7 +26,6 @@ import streamlit as st
 import streamlit.components.v1 as components
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
-from pandas_profiling import ProfileReport
 from plot_metric.functions import BinaryClassification
 from pycaret.utils import check_metric
 from sklearn import metrics
@@ -50,7 +50,7 @@ def main():
     
     dict_values_not_tuning, dict_values_tuning = {}, {} 
     
-    st.header("Modelagem Automatica de Modelos de Classificação")
+    st.header("AutoML para Modelos de Classificação")
     st.markdown("___")
     
     filedoc = codecs.open("..//markdowns//documentation.md", "r", "utf-8")
@@ -97,24 +97,32 @@ def main():
     if upload_file_oot is not None:
         df_oot = pd.read_csv(upload_file_oot)
 
-    st.markdown("**Comparar Modelos**")
-
+    subtitle1 = '<p style="font-size: 32px;"><b>AutoML Pipeline</b></p>'
+    subtitle2 = '<p style="color:Red; font-size: 18px;"><b>OBS.: Só inicie, após seguir o passo a passo acima!!!</b></p>'
+    st.markdown(subtitle1, unsafe_allow_html=True)
+    st.markdown(subtitle2, unsafe_allow_html=True)
+    
     start_button = st.button("Iniciar")
     if start_button:
         with st.spinner("Treinando Modelos"):
-            pcc.setup(
+            try:
+                pcc.setup(
                 data=df_abt,
                 target=TARGET,
                 session_id=123,
                 fold_strategy='kfold',
                 fold=5
-            )
-            BEST = pcc.compare_models(fold=5, sort="auc")
-            st.write(pcc.get_config("display_container")[1])
-            st.write(BEST)            
-            st.success("Etapa concluida com sucesso!")
-                
-                
+                )
+                BEST = pcc.compare_models(fold=5, sort="auc")
+                st.write(pcc.get_config("display_container")[1])
+                st.write(BEST)                     
+                st.success("Etapa concluida com sucesso!")
+        
+            except:
+                st.error("Verifique se os datasets de treino e teste foram inseridos.")  
+
+        
+      
         st.markdown("_______")
         st.markdown("**Treinar Modelo [BASE TREINO]**")
 
