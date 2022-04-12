@@ -1,5 +1,8 @@
 mkdir -p ~/.streamlit/
 
+pip3 install --upgrade pip
+pip3 install -r requiriments.txt
+
 echo "\
 [general]\n\
 email = \"andressagb@gmail.com\"\n\
