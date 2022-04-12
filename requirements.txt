@@ -1,4 +1,4 @@
 pycaret==2.3.6
-streamlit
+streamlit==0.84.2
 shap
 plot-metric
