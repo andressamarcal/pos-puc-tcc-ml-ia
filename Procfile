@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run classification_automatic2.py
+web: pip cache purge sh setup.sh && streamlit run classification_automatic2.py
