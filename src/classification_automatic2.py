@@ -54,7 +54,7 @@ def main():
     st.header("AutoML para Modelos de Classificação")
     st.markdown("___")
     
-    filedoc = codecs.open("pos-puc-tcc-ml-ia//markdowns//documentation.md", "r", "utf-8")
+    filedoc = codecs.open("markdowns//documentation.md", "r", "utf-8")
     st.write("\n\n")
     st.markdown(filedoc.read(), unsafe_allow_html=True)
 
