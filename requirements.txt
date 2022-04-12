@@ -55,7 +55,7 @@ itsdangerous==2.1.1
 jedi==0.18.1
 Jinja2==3.0.3
 joblib==1.0.1
-jsonschema==4.4.0s
+jsonschema==4.4.0
 kiwisolver==1.4.0
 kmodes==0.11.1
 lightgbm==3.3.2
