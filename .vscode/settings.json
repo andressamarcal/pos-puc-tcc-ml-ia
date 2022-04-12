@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "34.85.241.105",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "sage",
+            "database": "monitoring_db",
+            "username": "sage",
+            "password": "sage"
+        }
+    ]
+}
