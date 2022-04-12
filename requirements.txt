@@ -1,1 +1,2 @@
 pycaret==2.3.6
+streamlit
