@@ -131,7 +131,7 @@ requests==2.27.1
 scikit-learn
 scikit-plot==0.3.7
 # scipy==1.3.3
-scipy==1.5.2
+scipy
 seaborn==0.11.2
 semver==2.13.0
 Send2Trash==1.8.0
