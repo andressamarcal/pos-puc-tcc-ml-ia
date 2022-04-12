@@ -47,7 +47,7 @@ st.sidebar.image("img/ml3.png")
 
 
 def main():
-    global BEST, TARGET, df_abt, df_oot, model_name, model_auc
+    global BEST, TARGET, df_abt, df_oot, model_name, model_auc, build_model
     
     dict_values_not_tuning, dict_values_tuning = {}, {} 
     
@@ -145,66 +145,66 @@ def main():
 
         
       
-        st.markdown("_______")
-        st.markdown("**Treinar Modelo [BASE TREINO]**")
+            st.markdown("_______")
+            st.markdown("**Treinar Modelo [BASE TREINO]**")
 
-        col5, col6, col7  = st.beta_columns(3)
+            col5, col6, col7  = st.beta_columns(3)
 
-        try:
-            build_model = pcc.create_model(
-                estimator=BEST,
-                fold=5,
-                round=4,
-                cross_validation=True,
-                verbose=True,
-                system=True,
-            )
-            st.write(build_model)
-
-            holdout_model1 = pcc.pull()
-            st.write(holdout_model1)   
-            st.success("Etapa Concluída!")
-         
-
-            dict_values_not_tuning["model_auc"] = holdout_model1["AUC"].filter(
-                like="Mean", axis=0
-            )
-            dict_values_not_tuning["model_sd"] = holdout_model1["AUC"].filter(
-                like="SD", axis=0
-            )
-
-            with col5:
-                feature_graph = pcc.plot_model(
-                    build_model,
-                    plot="feature",
-                    save=True,
-                    display_format="streamlit",
+            try:
+                build_model = pcc.create_model(
+                    estimator=BEST,
+                    fold=5,
+                    round=4,
+                    cross_validation=True,
+                    verbose=True,
+                    system=True,
                 )
-                shutil.copy("Feature Importance.png", "FI_train.png")
-                st.image("FI_train.png")
+                st.write(build_model)
 
-            with col6:
-                auc_graph = pcc.plot_model(
-                    build_model, plot="auc", save=True, display_format="streamlit"
-                )
-                shutil.copy("AUC.png", "AUC_train.png")
-                st.image("AUC_train.png")
-
-            with col7:
-                confusion_matrix_graph = pcc.plot_model(
-                    build_model,
-                    plot="confusion_matrix",
-                    save=True,
-                    display_format="streamlit",
-                )
-                shutil.copy("Confusion Matrix.png", "CM_train.png")
-                st.image("CM_train.png")
+                holdout_model1 = pcc.pull()
+                st.write(holdout_model1)   
+                st.success("Etapa Concluída!")
             
-            st.success("Modelo Construido!")
-            
-        except Exception as e:
-            # st.error(e)
-            print("ERRO: ",e)
+
+                dict_values_not_tuning["model_auc"] = holdout_model1["AUC"].filter(
+                    like="Mean", axis=0
+                )
+                dict_values_not_tuning["model_sd"] = holdout_model1["AUC"].filter(
+                    like="SD", axis=0
+                )
+
+                with col5:
+                    feature_graph = pcc.plot_model(
+                        build_model,
+                        plot="feature",
+                        save=True,
+                        display_format="streamlit",
+                    )
+                    shutil.copy("Feature Importance.png", "FI_train.png")
+                    st.image("FI_train.png")
+
+                with col6:
+                    auc_graph = pcc.plot_model(
+                        build_model, plot="auc", save=True, display_format="streamlit"
+                    )
+                    shutil.copy("AUC.png", "AUC_train.png")
+                    st.image("AUC_train.png")
+
+                with col7:
+                    confusion_matrix_graph = pcc.plot_model(
+                        build_model,
+                        plot="confusion_matrix",
+                        save=True,
+                        display_format="streamlit",
+                    )
+                    shutil.copy("Confusion Matrix.png", "CM_train.png")
+                    st.image("CM_train.png")
+                
+                st.success("Modelo Construido!")
+                
+            except Exception as e:
+                # st.error(e)
+                print("ERRO: ",e)
 
         st.markdown("_______")
         st.markdown("**Tuning do Modelo**")
