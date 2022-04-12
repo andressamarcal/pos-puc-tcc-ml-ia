@@ -47,7 +47,7 @@ st.sidebar.image("img/ml3.png")
 
 
 def main():
-    global TARGET, df_abt, df_oot
+    global BEST, TARGET, df_abt, df_oot, model_name, model_auc
     
     dict_values_not_tuning, dict_values_tuning = {}, {} 
     
@@ -130,7 +130,7 @@ def main():
                 fix_imbalance=False,
                 session_id=123,
                 fold_strategy='kfold',
-                fold=10,
+                fold=5,
                 use_gpu=False,
                 log_experiment=False,
                 profile=False
