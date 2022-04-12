@@ -105,106 +105,106 @@ def main():
     
     start_button = st.button("Iniciar")
     if start_button:
-        with st.spinner("Treinando Modelos"):
-            try:
-                pcc.setup(
-                data=df_abt,
-                target=TARGET,
-                preprocess=True,
-                imputation_type='simple',
-                iterative_imputation_iters=5,
-                categorical_imputation='constant',
-                categorical_iterative_imputer='lightgbm',
-                high_cardinality_method='frequency',
-                numeric_imputation='mean',
-                numeric_iterative_imputer='lightgbm',
-                normalize=False,
-                normalize_method='zscore',
-                transformation=False,
-                remove_outliers=False,
-                remove_multicollinearity=False,
-                remove_perfect_collinearity=True,
-                feature_selection=False,
-                feature_selection_method='classic',
-                feature_interaction=False,
-                fix_imbalance=False,
-                session_id=123,
-                fold_strategy='kfold',
-                fold=5,
-                use_gpu=False,
-                log_experiment=False,
-                profile=False
-                )
-                BEST = pcc.compare_models(fold=5, sort="auc")
-                st.write(pcc.get_config("display_container")[1])
-                st.write(BEST)                     
-                st.success("Etapa concluida com sucesso!")
-        
-            except:
-                st.error("Os dados não foram inseridos corretamente!")  
+        # with st.spinner("Treinando Modelos"):
+        try:
+            pcc.setup(
+            data=df_abt,
+            target=TARGET,
+            preprocess=True,
+            imputation_type='simple',
+            iterative_imputation_iters=5,
+            categorical_imputation='constant',
+            categorical_iterative_imputer='lightgbm',
+            high_cardinality_method='frequency',
+            numeric_imputation='mean',
+            numeric_iterative_imputer='lightgbm',
+            normalize=False,
+            normalize_method='zscore',
+            transformation=False,
+            remove_outliers=False,
+            remove_multicollinearity=False,
+            remove_perfect_collinearity=True,
+            feature_selection=False,
+            feature_selection_method='classic',
+            feature_interaction=False,
+            fix_imbalance=False,
+            session_id=123,
+            fold_strategy='kfold',
+            fold=5,
+            use_gpu=False,
+            log_experiment=False,
+            profile=False
+            )
+            BEST = pcc.compare_models(fold=5, sort="auc")
+            st.write(pcc.get_config("display_container")[1])
+            st.write(BEST)                     
+            st.success("Etapa concluida com sucesso!")
+    
+        except:
+            st.error("Os dados não foram inseridos corretamente!")  
 
         
       
-            st.markdown("_______")
-            st.markdown("**Treinar Modelo [BASE TREINO]**")
+        st.markdown("_______")
+        st.markdown("**Treinar Modelo [BASE TREINO]**")
 
-            col5, col6, col7  = st.beta_columns(3)
+        col5, col6, col7  = st.beta_columns(3)
 
-            try:
-                build_model = pcc.create_model(
-                    estimator=BEST,
-                    fold=5,
-                    round=4,
-                    cross_validation=True,
-                    verbose=True,
-                    system=True,
+        try:
+            build_model = pcc.create_model(
+                estimator=BEST,
+                fold=5,
+                round=4,
+                cross_validation=True,
+                verbose=True,
+                system=True,
+            )
+            st.write(build_model)
+
+            holdout_model1 = pcc.pull()
+            st.write(holdout_model1)   
+            st.success("Etapa Concluída!")
+         
+
+            dict_values_not_tuning["model_auc"] = holdout_model1["AUC"].filter(
+                like="Mean", axis=0
+            )
+            dict_values_not_tuning["model_sd"] = holdout_model1["AUC"].filter(
+                like="SD", axis=0
+            )
+
+            with col5:
+                feature_graph = pcc.plot_model(
+                    build_model,
+                    plot="feature",
+                    save=True,
+                    display_format="streamlit",
                 )
-                st.write(build_model)
+                shutil.copy("Feature Importance.png", "FI_train.png")
+                st.image("FI_train.png")
 
-                holdout_model1 = pcc.pull()
-                st.write(holdout_model1)   
-                st.success("Etapa Concluída!")
+            with col6:
+                auc_graph = pcc.plot_model(
+                    build_model, plot="auc", save=True, display_format="streamlit"
+                )
+                shutil.copy("AUC.png", "AUC_train.png")
+                st.image("AUC_train.png")
+
+            with col7:
+                confusion_matrix_graph = pcc.plot_model(
+                    build_model,
+                    plot="confusion_matrix",
+                    save=True,
+                    display_format="streamlit",
+                )
+                shutil.copy("Confusion Matrix.png", "CM_train.png")
+                st.image("CM_train.png")
             
-
-                dict_values_not_tuning["model_auc"] = holdout_model1["AUC"].filter(
-                    like="Mean", axis=0
-                )
-                dict_values_not_tuning["model_sd"] = holdout_model1["AUC"].filter(
-                    like="SD", axis=0
-                )
-
-                with col5:
-                    feature_graph = pcc.plot_model(
-                        build_model,
-                        plot="feature",
-                        save=True,
-                        display_format="streamlit",
-                    )
-                    shutil.copy("Feature Importance.png", "FI_train.png")
-                    st.image("FI_train.png")
-
-                with col6:
-                    auc_graph = pcc.plot_model(
-                        build_model, plot="auc", save=True, display_format="streamlit"
-                    )
-                    shutil.copy("AUC.png", "AUC_train.png")
-                    st.image("AUC_train.png")
-
-                with col7:
-                    confusion_matrix_graph = pcc.plot_model(
-                        build_model,
-                        plot="confusion_matrix",
-                        save=True,
-                        display_format="streamlit",
-                    )
-                    shutil.copy("Confusion Matrix.png", "CM_train.png")
-                    st.image("CM_train.png")
-                
-                st.success("Modelo Construido!")
-                
-            except Exception as e:
-                # st.error(e)
-                print("ERRO: ",e)
+            st.success("Modelo Construido!")
+            
+        except Exception as e:
+            # st.error(e)
+            print("ERRO: ",e)
 
         st.markdown("_______")
         st.markdown("**Tuning do Modelo**")
