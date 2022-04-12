@@ -43,7 +43,7 @@ st.set_option("deprecation.showPyplotGlobalUse", False)
 st.set_option("deprecation.showfileUploaderEncoding", False)
 
 st.sidebar.header("AutoML App\n\n\n")
-st.sidebar.image("../img/ml3.png")
+st.sidebar.image("pos-puc-tcc-ml-ia/img/ml3.png")
 
 
 def main():
@@ -54,7 +54,7 @@ def main():
     st.header("AutoML para Modelos de Classificação")
     st.markdown("___")
     
-    filedoc = codecs.open("..//markdowns//documentation.md", "r", "utf-8")
+    filedoc = codecs.open("pos-puc-tcc-ml-ia//markdowns//documentation.md", "r", "utf-8")
     st.write("\n\n")
     st.markdown(filedoc.read(), unsafe_allow_html=True)
 
