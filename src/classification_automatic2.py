@@ -43,7 +43,7 @@ st.set_option("deprecation.showPyplotGlobalUse", False)
 st.set_option("deprecation.showfileUploaderEncoding", False)
 
 st.sidebar.header("AutoML App\n\n\n")
-st.sidebar.image("pos-puc-tcc-ml-ia/img/ml3.png")
+st.sidebar.image("img/ml3.png")
 
 
 def main():
