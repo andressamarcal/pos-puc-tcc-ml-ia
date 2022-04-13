@@ -149,124 +149,128 @@ def main():
 
         col5, col6, col7  = st.beta_columns(3)
 
-        try:
-            build_model = pcc.create_model(
-                fold=5,
-                round=4,
-                cross_validation=True,
-                verbose=True,
-                system=True,
-            )
-            st.write(build_model)
-
-            holdout_model1 = pcc.pull()
-            st.write(holdout_model1)   
-            st.success("Etapa Concluída!")
-         
-
-            dict_values_not_tuning["model_auc"] = holdout_model1["AUC"].filter(
-                like="Mean", axis=0
-            )
-            dict_values_not_tuning["model_sd"] = holdout_model1["AUC"].filter(
-                like="SD", axis=0
-            )
-
-            with col5:
-                feature_graph = pcc.plot_model(
-                    build_model,
-                    plot="feature",
-                    save=True,
-                    display_format="streamlit",
+        if BEST:
+            try:
+                build_model = pcc.create_model(
+                    estimator=BEST,
+                    fold=5,
+                    round=4,
+                    cross_validation=True,
+                    verbose=True,
+                    system=True,
                 )
-                shutil.copy("Feature Importance.png", "FI_train.png")
-                st.image("FI_train.png")
+                st.write(build_model)
 
-            with col6:
-                auc_graph = pcc.plot_model(
-                    build_model, plot="auc", save=True, display_format="streamlit"
-                )
-                shutil.copy("AUC.png", "AUC_train.png")
-                st.image("AUC_train.png")
-
-            with col7:
-                confusion_matrix_graph = pcc.plot_model(
-                    build_model,
-                    plot="confusion_matrix",
-                    save=True,
-                    display_format="streamlit",
-                )
-                shutil.copy("Confusion Matrix.png", "CM_train.png")
-                st.image("CM_train.png")
+                holdout_model1 = pcc.pull()
+                st.write(holdout_model1)   
+                st.success("Etapa Concluída!")
             
-            st.success("Modelo Construido!")
-            
-        except Exception as e:
-            # st.error(e)
-            print("ERRO: ",e)
+
+                dict_values_not_tuning["model_auc"] = holdout_model1["AUC"].filter(
+                    like="Mean", axis=0
+                )
+                dict_values_not_tuning["model_sd"] = holdout_model1["AUC"].filter(
+                    like="SD", axis=0
+                )
+
+                with col5:
+                    feature_graph = pcc.plot_model(
+                        build_model,
+                        plot="feature",
+                        save=True,
+                        display_format="streamlit",
+                    )
+                    shutil.copy("Feature Importance.png", "FI_train.png")
+                    st.image("FI_train.png")
+
+                with col6:
+                    auc_graph = pcc.plot_model(
+                        build_model, plot="auc", save=True, display_format="streamlit"
+                    )
+                    shutil.copy("AUC.png", "AUC_train.png")
+                    st.image("AUC_train.png")
+
+                with col7:
+                    confusion_matrix_graph = pcc.plot_model(
+                        build_model,
+                        plot="confusion_matrix",
+                        save=True,
+                        display_format="streamlit",
+                    )
+                    shutil.copy("Confusion Matrix.png", "CM_train.png")
+                    st.image("CM_train.png")
+                
+                st.success("Modelo Construido!")
+                
+            except Exception as e:
+                # st.error(e)
+                print("ERRO: ",e)
 
         st.markdown("_______")
         st.markdown("**Tuning do Modelo**")
 
         col8, col9, col10 = st.beta_columns(3)
 
-        try:
-            model_tuned = pcc.tune_model(
-                fold=5, 
-                n_iter=10, 
-                optimize="AUC",
-                round=4,
-                search_library='scikit-learn',
-                early_stopping=False,
-                early_stopping_max_iters=10,
-                return_train_score=True                
-                )
-            st.write(model_tuned)
+        if BEST:
+            try:
+                model_tuned = pcc.tune_model(
+                    estimator=build_model, 
+                    fold=5, 
+                    n_iter=10, 
+                    optimize="AUC",
+                    round=4,
+                    search_library='scikit-learn',
+                    early_stopping=False,
+                    early_stopping_max_iters=10,
+                    return_train_score=True                
+                    )
+                st.write(model_tuned)
 
-            holdout_tune_model = pcc.pull()
-            st.write(holdout_tune_model)
+                holdout_tune_model = pcc.pull()
+                st.write(holdout_tune_model)
 
-            dict_values_tuning["tune_model_auc"] = holdout_tune_model["AUC"].filter(
-                like="Mean", axis=0
-            )
-
-            dict_values_tuning["tune_model_sd"] = holdout_tune_model["AUC"].filter(
-                like="SD", axis=0
-            )
-
-            with col8:
-                feature_graph_tuned = pcc.plot_model(
-                    model_tuned,
-                    plot="feature",
-                    save=True,
-                    display_format="streamlit",
+                dict_values_tuning["tune_model_auc"] = holdout_tune_model["AUC"].filter(
+                    like="Mean", axis=0
                 )
 
-                shutil.copy("Feature Importance.png", "FI_tuned.png")
-                st.image("FI_tuned.png")
-
-            with col9:
-                auc_graph_tuned = pcc.plot_model(
-                    model_tuned, plot="auc", save=True, display_format="streamlit"
+                dict_values_tuning["tune_model_sd"] = holdout_tune_model["AUC"].filter(
+                    like="SD", axis=0
                 )
 
-                shutil.copy("AUC.png", "AUC_tuned.png")
-                st.image("AUC_tuned.png")
+                with col8:
+                    feature_graph_tuned = pcc.plot_model(
+                        model_tuned,
+                        plot="feature",
+                        save=True,
+                        display_format="streamlit",
+                    )
 
-            with col10:
-                confusion_matrix_graph_tuned = pcc.plot_model(
-                    model_tuned,
-                    plot="confusion_matrix",
-                    save=True,
-                    display_format="streamlit",
-                )
+                    shutil.copy("Feature Importance.png", "FI_tuned.png")
+                    st.image("FI_tuned.png")
 
-                shutil.copy("Confusion Matrix.png", "CM_tuned.png")
-                st.image("CM_tuned.png")
-    
-            st.success("Etapa Concluida!")
+                with col9:
+                    auc_graph_tuned = pcc.plot_model(
+                        model_tuned, plot="auc", save=True, display_format="streamlit"
+                    )
 
-        except UnboundLocalError as e:
-            print("ERRO: ", e)
+                    shutil.copy("AUC.png", "AUC_tuned.png")
+                    st.image("AUC_tuned.png")
+
+                with col10:
+                    confusion_matrix_graph_tuned = pcc.plot_model(
+                        model_tuned,
+                        plot="confusion_matrix",
+                        save=True,
+                        display_format="streamlit",
+                    )
+
+                    shutil.copy("Confusion Matrix.png", "CM_tuned.png")
+                    st.image("CM_tuned.png")
+        
+                st.success("Etapa Concluida!")
+
+            except UnboundLocalError as e:
+                print("ERRO: ", e)
 
         st.markdown("_______")
         st.markdown("**Interpretabilidade [BASE TREINO]**")
