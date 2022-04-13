@@ -134,16 +134,14 @@ def main():
                 use_gpu=False,
                 log_experiment=False,
                 profile=False
-                )        
+                )  
+                BEST = pcc.compare_models(fold=5, sort="auc")
+                st.write(pcc.get_config("display_container")[1])
+                st.write(BEST)                     
+                st.success("Etapa concluida com sucesso!")      
             except:
                 st.error("Os dados não foram inseridos corretamente!")  
 
-            BEST = pcc.compare_models(fold=5, sort="auc")
-            st.write(pcc.get_config("display_container")[1])
-            st.write(BEST)                     
-            st.success("Etapa concluida com sucesso!")
-    
-      
         st.markdown("_______")
         st.markdown("**Treinar Modelo [BASE TREINO]**")
 
