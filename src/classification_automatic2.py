@@ -107,20 +107,20 @@ def main():
     if start_button:
         # with st.spinner("Treinando Modelos"):
             # try:
-        SETUP = pcc.setup(
+        pcc.setup(
         data=df_abt,
         target=TARGET,
         session_id=123,
         fold_strategy='kfold',
         fold=5,
         )  
-        if SETUP:    
-            BEST = pcc.compare_models(fold=5, sort="auc")
-            st.write(pcc.get_config("display_container")[1])
-            st.write(BEST)                     
-            st.success("Etapa concluida com sucesso!")      
-                # except:
-                    # st.error("Os dados não foram inseridos corretamente!")  
+            
+        BEST = pcc.compare_models(fold=5, sort="auc")
+        st.write(pcc.get_config("display_container")[1])
+        st.write(BEST)                     
+        st.success("Etapa concluida com sucesso!")      
+            # except:
+                # st.error("Os dados não foram inseridos corretamente!")  
 
         st.markdown("_______")
         st.markdown("**Treinar Modelo [BASE TREINO]**")
