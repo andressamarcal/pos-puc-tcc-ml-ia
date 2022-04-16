@@ -48,12 +48,12 @@ st.sidebar.image("img/ml3.png")
 
 def main():
     global BEST, TARGET, df_abt, df_oot, model_name, model_auc, build_model
-    
-    dict_values_not_tuning, dict_values_tuning = {}, {} 
-    
+
+    dict_values_not_tuning, dict_values_tuning = {}, {}
+
     st.header("AutoML para Modelos de Classificação")
     st.markdown("___")
-    
+
     filedoc = codecs.open("markdowns//documentation.md", "r", "utf-8")
     st.write("\n\n")
     st.markdown(filedoc.read(), unsafe_allow_html=True)
@@ -61,17 +61,17 @@ def main():
     upload_file_abt = st.sidebar.file_uploader(
         label="Upload BASE TREINO", type=["csv", "xlsx"]
     )
-    
+
     upload_file_oot = st.sidebar.file_uploader(
         label="Upload  BASE TESTE", type=["csv", "xlsx"]
     )
 
     if upload_file_abt is not None:
-                
+
         st.markdown("**Dataset Treino**")
         df_abt = pd.read_csv(upload_file_abt)
         st.write(df_abt.head(20).head(20).style.highlight_null(null_color="yellow"))
-        
+
         st.markdown("**Target**")
         if upload_file_abt:
             try:
@@ -91,7 +91,7 @@ def main():
                     )
                 )
                 st.text(f"Linhas x Colunas: {df_abt.shape}")
-                
+
             except:
                 st.warning("**Campo Obrigatorio!**")
 
@@ -102,30 +102,31 @@ def main():
     subtitle2 = '<p style="color:Red; font-size: 18px;"><b>OBS.: Só inicie, após seguir o passo a passo acima!!!</b></p>'
     st.markdown(subtitle1, unsafe_allow_html=True)
     st.markdown(subtitle2, unsafe_allow_html=True)
-    
+
     start_button = st.button("Iniciar")
+    SETUP, BEST = None, None
     if start_button:
         # with st.spinner("Treinando Modelos"):
-            # try:
-        pcc.setup(
-        data=df_abt,
-        target=TARGET,
-        session_id=123,
-        fold_strategy='kfold',
-        fold=5,
-        )  
-            
-        BEST = pcc.compare_models(fold=5, sort="auc")
-        st.write(pcc.get_config("display_container")[1])
-        st.write(BEST)                     
-        st.success("Etapa concluida com sucesso!")      
+        # try:
+        SETUP = pcc.setup(
+            data=df_abt,
+            target=TARGET,
+            session_id=123,
+            fold_strategy="kfold",
+            fold=5,
+        )
+        if SETUP:
+            BEST = pcc.compare_models(fold=5, sort="auc")
+            st.write(pcc.get_config("display_container")[1])
+            st.write(BEST)
+            st.success("Etapa concluida com sucesso!")
             # except:
-                # st.error("Os dados não foram inseridos corretamente!")  
+            # st.error("Os dados não foram inseridos corretamente!")
 
         st.markdown("_______")
         st.markdown("**Treinar Modelo [BASE TREINO]**")
 
-        col5, col6, col7  = st.beta_columns(3)
+        col5, col6, col7 = st.beta_columns(3)
 
         if BEST:
             try:
@@ -140,9 +141,8 @@ def main():
                 st.write(build_model)
 
                 holdout_model1 = pcc.pull()
-                st.write(holdout_model1)   
+                st.write(holdout_model1)
                 st.success("Etapa Concluída!")
-            
 
                 dict_values_not_tuning["model_auc"] = holdout_model1["AUC"].filter(
                     like="Mean", axis=0
@@ -177,12 +177,12 @@ def main():
                     )
                     shutil.copy("Confusion Matrix.png", "CM_train.png")
                     st.image("CM_train.png")
-                
+
                 st.success("Modelo Construido!")
-                
+
             except Exception as e:
                 # st.error(e)
-                print("ERRO: ",e)
+                print("ERRO: ", e)
 
         st.markdown("_______")
         st.markdown("**Tuning do Modelo**")
@@ -192,16 +192,16 @@ def main():
         if BEST:
             try:
                 model_tuned = pcc.tune_model(
-                    estimator=build_model, 
-                    fold=5, 
-                    n_iter=10, 
+                    estimator=build_model,
+                    fold=5,
+                    n_iter=10,
                     optimize="AUC",
                     round=4,
-                    search_library='scikit-learn',
+                    search_library="scikit-learn",
                     early_stopping=False,
                     early_stopping_max_iters=10,
-                    return_train_score=True                
-                    )
+                    return_train_score=True,
+                )
                 st.write(model_tuned)
 
                 holdout_tune_model = pcc.pull()
@@ -244,7 +244,7 @@ def main():
 
                     shutil.copy("Confusion Matrix.png", "CM_tuned.png")
                     st.image("CM_tuned.png")
-        
+
                 st.success("Etapa Concluida!")
 
             except UnboundLocalError as e:
@@ -271,29 +271,25 @@ def main():
             ):
                 with col111:
                     model_interpreted = pcc.interpret_model(
-                        estimator=build_model,
-                        plot='summary',
-                        save=True
-                        )
-                    st.pyplot()                    
-                # with col121:
-                #     model_interpreted2 = pcc.interpret_model(build_model, plot="correlation")
-                #     st.pyplot()
+                        estimator=build_model, plot="summary", save=True
+                    )
+                    st.pyplot()
+                    # with col121:
+                    #     model_interpreted2 = pcc.interpret_model(build_model, plot="correlation")
+                    #     st.pyplot()
                     st.success("Etapa concluida!")
 
             else:
                 with col111:
                     model_interpreted = pcc.interpret_model(
-                        estimator=model_tuned,
-                        plot='summary',
-                        save=True
-                        )
+                        estimator=model_tuned, plot="summary", save=True
+                    )
                     st.pyplot()
-                # with col121:
-                #     model_interpreted2 = pcc.interpret_model(model_tuned, plot="correlation")
-                #     st.pyplot()
+                    # with col121:
+                    #     model_interpreted2 = pcc.interpret_model(model_tuned, plot="correlation")
+                    #     st.pyplot()
                     st.success("Etapa concluida!")
-        
+
         except Exception as e:
             print("ERRO: ", e)
 
@@ -311,8 +307,8 @@ def main():
                     estimator=build_model,
                     encoded_labels=False,
                     raw_score=False,
-                    round=4,                    
-                    )
+                    round=4,
+                )
                 st.write(predictions.head())
             else:
                 predictions = pcc.predict_model(
@@ -320,12 +316,12 @@ def main():
                     encoded_labels=False,
                     raw_score=False,
                     round=4,
-                    )
+                )
                 st.write(predictions.head())
-           
+
         except Exception as error:
-            print("ERRO: ",error)
-        
+            print("ERRO: ", error)
+
         st.markdown("_______")
         st.markdown("**Exportar Arquivo Final**")
 
@@ -352,18 +348,17 @@ def main():
 
                 if saved:
                     st.success("Arquivo .pkl gerado com sucesso!")
-                    
-            
+
             # st.markdown("_______")
             # st.markdown("** Grupos Homogeneos [TREINO]**")
-            
+
             # col22, col23 = st.beta_columns(2)
-            
+
             # predictions["proba"] = predictions.apply(lambda x: x["Score"] if x["Label"] == 1 else 1-x["Score"], axis=1)
 
             # d1 = pd.DataFrame(
             #     {'Bucket': pd.qcut(predictions['proba'], 10), 'Num': 1})
-                    
+
             # d4 = d1.groupby(["Bucket"], as_index=False)["Num"].count().reset_index()
             # d4['Bucket'] = d4['Bucket'].astype(str)
             # d4 = d4.drop(['index'], axis=1)
@@ -378,10 +373,10 @@ def main():
             #         l4.append(float(x))
 
             # st.markdown("_______")
-                    
+
             # predictions['GH']= pd.cut(predictions.proba, bins = sorted(set(l4)), labels=l5)
             # predictions[TARGET] = predictions[TARGET].astype(int)
-                 
+
             # qtd = predictions.groupby(["GH"])[TARGET].count()
             # prc = round(predictions.groupby(["GH"])[TARGET].sum()/predictions.groupby(['GH'])[TARGET].count(), 2)
 
@@ -389,10 +384,10 @@ def main():
             # ghs["Volumetria"], ghs["%"] = qtd, prc
 
             # with col22:
-            #     st.dataframe(d4) 
+            #     st.dataframe(d4)
             # with col23:
             #     st.dataframe(ghs.reset_index().astype(str))
-            
+
             # matplotlib.rc_file_defaults()
             # ax1 = sns.set_style(style=None, rc=None )
             # fig, ax1 = plt.subplots(figsize=(16,3))
@@ -406,7 +401,7 @@ def main():
 
         except Exception as e:
             # st.error(e)
-            print("Erro: ",e)
+            print("Erro: ", e)
 
         st.markdown("_______")
         st.markdown("## Avaliando Base de Teste")
@@ -418,43 +413,42 @@ def main():
             st.markdown("_______")
             st.markdown("**Predições BASE TESTE**")
             st.write(predictions_oot.head())
-         
+
             st.markdown("_______")
             st.markdown("**Métricas BASE TESTE**")
             results = pcc.pull()
             st.write(results)
             st.success("PIPELINE CONCLUÍDO!")
 
-            
             # try:
             #     st.markdown("_______")
             #     st.markdown("**KS e GINI da BASE TESTE**")
-                
+
             #     predictions_oot["proba"] = predictions_oot.apply(lambda x: x["Score"] if x["Label"] == 1 else 1-x["Score"], axis=1)
-            #     ks_stat = stats.ks_2samp(predictions_oot.loc[predictions_oot[TARGET]==0,"proba"], predictions_oot.loc[predictions_oot[TARGET]==1,"proba"])            
-            #     calc_gini = (results['AUC']*2)-1    
-                    
+            #     ks_stat = stats.ks_2samp(predictions_oot.loc[predictions_oot[TARGET]==0,"proba"], predictions_oot.loc[predictions_oot[TARGET]==1,"proba"])
+            #     calc_gini = (results['AUC']*2)-1
+
             #     st.markdown("\n* KS: %.2f" % round(ks_stat[0], 2))
-            #     st.markdown("* GINI: %.2f" % round(calc_gini, 2)) 
+            #     st.markdown("* GINI: %.2f" % round(calc_gini, 2))
 
             # except Exception as e:
             #     st.error("Variavel target não está disponivel nos seus dados: ", e)
-            
-            X_train = pcc.get_config('X_train')
-            X_test = pcc.get_config('X_test')
-            y_train = pcc.get_config('y_train')
-            y_test = pcc.get_config('y_test')
-            
+
+            X_train = pcc.get_config("X_train")
+            X_test = pcc.get_config("X_test")
+            y_train = pcc.get_config("y_train")
+            y_test = pcc.get_config("y_test")
+
             # st.markdown("_______")
-            # st.markdown("** Grupos Homogeneos [TESTE]**")            
-            
+            # st.markdown("** Grupos Homogeneos [TESTE]**")
+
             # predictions_oot["proba"] = predictions_oot.apply(lambda x: x["Score"] if x["Label"] == 1 else 1-x["Score"], axis=1)
-            
+
             # col20, col21 = st.beta_columns(2)
-            
+
             # d1 = pd.DataFrame(
             #     {'Bucket': pd.qcut(predictions_oot['proba'], 10), 'Num': 1})
-                    
+
             # d2 = d1.groupby(["Bucket"], as_index=False)["Num"].count().reset_index()
             # d2[['Bucket']] = d2[['Bucket']].astype(str)
             # d2 = d2.drop(['index'], axis=1)
@@ -469,9 +463,9 @@ def main():
             #         l2.append(float(x))
 
             # st.markdown("_______")
-                    
+
             # predictions_oot['GH']= pd.cut(predictions_oot.proba, bins = sorted(set(l2)), labels=l3)
-                        
+
             # qtd = predictions_oot.groupby(["GH"])[TARGET].count()
             # prc = predictions_oot.groupby(["GH"])[TARGET].sum()/predictions_oot.groupby(['GH'])[TARGET].count()
 
@@ -479,11 +473,10 @@ def main():
             # ghs["Volumetria"], ghs["%"] = qtd, prc
 
             # with col20:
-            #     st.dataframe(d2) 
+            #     st.dataframe(d2)
             # with col21:
             #     st.dataframe(ghs.reset_index().astype(str))
-            
-            
+
             # matplotlib.rc_file_defaults()
             # ax1 = sns.set_style(style=None, rc=None )
             # fig, ax1 = plt.subplots(figsize=(16,3))
@@ -495,62 +488,61 @@ def main():
             # st.pyplot()
             # st.success("Etapa concluida!")
 
-
             # st.markdown("_______")
             # st.markdown("** PSI **")
-            
+
             # d4['proporcao-treino'] = d4['Num']/d4['Num'].sum()
             # d2['proporcao-oot'] = d2['Num']/d2['Num'].sum()
             # d2['proporcao-treino']= d4['proporcao-treino']
 
             # d2['PSI'] = (d4['proporcao-treino'] - d2['proporcao-oot']) * np.log(d4['proporcao-treino'] / d2['proporcao-oot'])
             # d4['PSI'] = (d4['proporcao-treino'] - d2['proporcao-oot']) * np.log(d4['proporcao-treino'] / d2['proporcao-oot'])
-            
+
             # st.write(d2)
-            
+
             # st.markdown("_______")
-            # st.markdown("**Ponto de Corte**")      
-            
+            # st.markdown("**Ponto de Corte**")
+
             # numbers = [float(x)/10 for x in range(10)]
             # df4 = predictions.copy()
             # y_train_pred_final = []
-            
+
             # for i in numbers:
             #     df4[i]= predictions['proba'].map(lambda x: 1 if x > i else 0)
 
             # cutoff_df = pd.DataFrame(columns = ['prob','accuracy','sensi','speci'])
-            
+
             # num = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
             # for i in num:
             #     cm1 = metrics.confusion_matrix(df4[TARGET], df4[i])
             #     total1=sum(sum(cm1))
-            #     accuracy = (cm1[0,0]+cm1[1,1])/total1                
+            #     accuracy = (cm1[0,0]+cm1[1,1])/total1
             #     speci = cm1[0,0]/(cm1[0,0]+cm1[0,1])
             #     sensi = cm1[1,1]/(cm1[1,0]+cm1[1,1])
             #     cutoff_df.loc[i] =[i,accuracy,sensi,speci]
-            
+
             # st.write(cutoff_df)
-            
+
             # col30, col31 = st.beta_columns(2)
 
             # with col30:
             #     cutoff_df.plot.line(x='prob', y=['accuracy','sensi','speci'])
             #     plt.show()
             #     st.pyplot()
-            
+
             # bc = BinaryClassification(y_test, df4['Label'], labels=["Class 1", "Class 2"])
-            
+
             # with col31:
             #     plt.figure(figsize=(5,5))
             #     bc.plot_roc_curve()
             #     plt.show()
-            #     st.pyplot()          
+            #     st.pyplot()
 
         except Exception as e:
             # st.error(e)
-            print("ERRO: ", e) 
-        
-        #clear dictionary
+            print("ERRO: ", e)
+
+        # clear dictionary
         dict_values_not_tuning.clear()
         dict_values_tuning.clear()
 
@@ -559,11 +551,12 @@ def main():
 
     # elif TYPE == "Regressão":
     #     regression_pycaret()
-    
+
     # st.markdown("_______")
     # filedoc = codecs.open("..//markdowns//tecnicas_usadas.md", "r", "utf-8")
     # st.write("\n\n")
     # st.markdown(filedoc.read(), unsafe_allow_html=True)
+
 
 if __name__ == "__main__":
     main()
