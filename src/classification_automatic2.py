@@ -110,37 +110,17 @@ def main():
         SETUP = pcc.setup(
         data=df_abt,
         target=TARGET,
-        preprocess=True,
-        imputation_type='simple',
-        iterative_imputation_iters=5,
-        categorical_imputation='constant',
-        categorical_iterative_imputer='lightgbm',
-        high_cardinality_method='frequency',
-        numeric_imputation='mean',
-        numeric_iterative_imputer='lightgbm',
-        normalize=False,
-        normalize_method='zscore',
-        transformation=False,
-        remove_outliers=False,
-        remove_multicollinearity=False,
-        remove_perfect_collinearity=True,
-        feature_selection=False,
-        feature_selection_method='classic',
-        feature_interaction=False,
-        fix_imbalance=False,
         session_id=123,
         fold_strategy='kfold',
         fold=5,
-        use_gpu=False,
-        log_experiment=False,
-        profile=False
         )  
-        BEST = pcc.compare_models(fold=5, sort="auc")
-        st.write(pcc.get_config("display_container")[1])
-        st.write(BEST)                     
-        st.success("Etapa concluida com sucesso!")      
-            # except:
-                # st.error("Os dados não foram inseridos corretamente!")  
+        if SETUP:    
+            BEST = pcc.compare_models(fold=5, sort="auc")
+            st.write(pcc.get_config("display_container")[1])
+            st.write(BEST)                     
+            st.success("Etapa concluida com sucesso!")      
+                # except:
+                    # st.error("Os dados não foram inseridos corretamente!")  
 
         st.markdown("_______")
         st.markdown("**Treinar Modelo [BASE TREINO]**")
