@@ -4,3 +4,4 @@ Aplicação referente ao trabalho de conclusão da pos graduação de machine le
 
 
 [![Vídeo de Demostração do Uso da Ferramenta]]({automl-tcc-demo.mp4} "Demo da Ferramenta")
+[![Alternate Text]({automl-tcc-demo.mp4})](automl-tcc-demo.mp4} "Link Title")
