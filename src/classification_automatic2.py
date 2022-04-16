@@ -115,6 +115,7 @@ def main():
             fold_strategy="kfold",
             fold=5,
         )
+        print(f"AQUIiiiiiiiii O SETUP: {SETUP}")
         if SETUP:
             BEST = pcc.compare_models(fold=5, sort="auc")
             st.write(pcc.get_config("display_container")[1])
