@@ -10,5 +10,6 @@
             "username": "sage",
             "password": "sage"
         }
-    ]
+    ],
+    "python.formatting.provider": "black"
 }

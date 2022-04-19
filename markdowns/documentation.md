@@ -1,10 +1,16 @@
-# AutoML - Projeto de Pós Graduação em Machine Learning e IA
+# FastML - Projeto de Pós Graduação em Machine Learning e IA
 
 <br>
 
 **Bem-vindo(a) a aplicação de Machine Learning Automatico para criação de Modelos de Classificação.**
 
-<br>
+<br><br>
+
+### **FastML é uma ferramenta que usa Automated Machine Learning (AutoML) para criação automatizada de Modelos de Classificação, tudo utilizando uma interface amigável e, permitindo com poucos cliques, a prototipação rápida de modelos para problemas de classificação.**
+
+<br><br>
+
+**Passo a passo para uso da ferramenta:**
 
 Antes de iniciar o uso da aplicação, siga os passos listados abaixo, para que seu experimento funcione corretamente.
 
@@ -20,7 +26,7 @@ Antes de iniciar o uso da aplicação, siga os passos listados abaixo, para que 
 
 <!-- 5. Subtende-se que o dataset que foi inserido, estará <u>devidamente tratado</u> , pois a aplicação já irá aplicar tecnicas automaticas, partindo do pré suposto que os dados já estejam <u>tratados pelo encarregado de inserir na aplicação</u> para a criação do modelo Fast. -->
 
-5. A parte de **intepretabilidade** só irá funcionar para **modelos baseados em árvores**. 
+<!-- 5. A parte de **intepretabilidade** só irá funcionar para **modelos baseados em árvores**.  -->
 
 <br>
 
