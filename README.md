@@ -13,5 +13,13 @@
 
 Esse projeto foi desenvolvido para conclusão da Pós Graduação em Machine Learning e IA da PUC Minas, pela aluna Andressa Marçal.
 
+<br>
 
 <a href="https://drive.google.com/file/d/1Gsu9_oCBn6IJ108XkljEZAl9W1fKbF0R/view?usp=sharing" title="Demostração da Ferramenta"><img src="demo-ferramenta-automl.png" alt="Vídeo de Demostração do Funcionamento da Ferramenta" /></a>
+
+<br>
+
+
+Principais bibliotecas utilizadas no projeto:
+1. PyCaret
+2. Streamlit
