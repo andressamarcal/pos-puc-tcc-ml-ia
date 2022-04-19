@@ -28,7 +28,7 @@ Principais bibliotecas utilizadas no projeto:
 <br>
 
 
-**Para rodar a aplicação localmente, primeiro baixe o repositorio na sua máquina, depois utilize os seguintes comando:**
+**Para rodar a aplicação localmente, primeiro baixe o repositorio na sua máquina, depois utilize os seguintes comandos:**
 
 1. `docker build . -t fastml`
 2. `docker run fastml` 
