@@ -23,3 +23,12 @@ Esse projeto foi desenvolvido para conclusão da Pós Graduação em Machine Lea
 Principais bibliotecas utilizadas no projeto:
 1. PyCaret
 2. Streamlit
+
+
+<br>
+
+
+**Para rodar a aplicação locamente, primeiro baixe o repositorio na sua máquina, depois utilize o seguinte comando:**
+
+1. `docker build . -t pycaret`
+2. `docker run pycaret` 
