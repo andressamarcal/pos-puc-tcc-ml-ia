@@ -28,7 +28,7 @@ Principais bibliotecas utilizadas no projeto:
 <br>
 
 
-**Para rodar a aplicação locamente, primeiro baixe o repositorio na sua máquina, depois utilize o seguinte comando:**
+**Para rodar a aplicação localmente, primeiro baixe o repositorio na sua máquina, depois utilize os seguintes comando:**
 
-1. `docker build . -t pycaret`
-2. `docker run pycaret` 
+1. `docker build . -t fastml`
+2. `docker run fastml` 
